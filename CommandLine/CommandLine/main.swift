@@ -12,30 +12,50 @@ let data = try! String(contentsOfFile: "data.csv")
 
 let lines = data.componentsSeparatedByCharactersInSet(NSCharacterSet.newlineCharacterSet())
 
+// the total values of the different
+
 var foodTotal = 0
 var fuelTotal = 0
 
-
+var totals = [
+    "fuel":0,
+    "food":0
+]
 
 for lineNumber in 1..<lines.count {
     
     let line = lines[lineNumber]
     
+    if line.characters.count == 0 {
+        continue // skip this line
+    }
+    
     let columns = line.componentsSeparatedByString(",")
+    
+    totals[columns[0]] = totals[columns[0]] ?? 0 + 2
+
+//    // typo!
+//    if let currentFuel = totals["feul"] {
+//        totals["fuel"] = currentFuel + 2
+//    }
+    
+    guard columns.count == 2 else {
+        fatalError("Columns must be 2")
+    }
     
     let name = columns[0]
     
-    guard let weight = Int(columns[1]) else {
-        fatalError("Line \(lineNumber): Cannot parse number: \(columns[1])")
-    }
-    
-    switch name {
-    case "Mars Food":
-        foodTotal += weight
-    case "Neptune Fuel":
-        fuelTotal += weight
-    default:
-        fatalError("Line \(lineNumber): Invalid type: \(name)")
+    if let weight = Int(columns[1]) {
+        switch name {
+        case "Mars Food":
+            foodTotal += weight
+        case "Neptune Fuel":
+            fuelTotal += weight
+        default:
+            fatalError("Line \(lineNumber): Invalid type: \(name)")
+        }
+    } else {
+        fatalError("Could not convert int")
     }
     
 }
